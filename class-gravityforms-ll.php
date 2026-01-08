@@ -532,24 +532,26 @@ class GFLeadLoversAddOn extends GFAddOn {
 		//Pega o array com as configurações do Formulário atual
 		$settings = $this->get_form_settings( $form );
 		//Pega os dados da Máquina/Sequência/Nível 
-		$machine_id = strval($settings['gf_leadlovers_machine']);
-
-		$sequence_id = strval($settings['gf_leadlovers_sequence']);
-		$level_id = strval($settings['gf_leadlovers_level']);
+		// $machine_id = strval($settings['gf_leadlovers_machine']);
+		// $sequence_id = strval($settings['gf_leadlovers_sequence']);
+		// $level_id = strval($settings['gf_leadlovers_level']);
+		$machine_id = rgar($settings,'gf_leadlovers_machine');
+		$sequence_id = rgar($settings, 'gf_leadlovers_sequence');
+		$level_id = rgar($settings, 'gf_leadlovers_level');
 		//Pega os campos da entrada $entry (Nome e Email)
-		$email_field_id = $settings['gf_email_field'];
+		$email_field_id = rgar($settings, 'gf_email_field');
 		$email = rgar($entry, $email_field_id); // Email
 		// Capturar os valores das entradas do formulário usando as referencias (ids) de campo
-		$name_field_id = $settings['gf_name_field'];
+		$name_field_id = rgar($settings, 'gf_name_field');
 		$nome = rgar($entry, $name_field_id); // Nome
 		//Pega o id da tag
-		$tag_id = strval($settings['gf_leadlovers_tag']);
+		$tag_id = rgar($settings, 'gf_leadlovers_tag');
 
 		// Pega os campos dinâmicos das configurações
-		$dynamic_field_id = strval($settings['gf_leadlovers_dynamic_field_id']);
-		$dynamic_field_text = $settings['gf_leadlovers_dynamic_field_text'];
+		$dynamic_field_id = rgar($settings, 'gf_leadlovers_dynamic_field_id');
+		$dynamic_field_text = rgar($settings, 'gf_leadlovers_dynamic_field_text');
 
-		if($settings['gf_week_dynamic_field_enabled'])
+		if(rgar($settings, 'gf_week_dynamic_field_enabled'))
 		{
 			//Prefixo + Semana do ano + week_plus
 			$dynamic_field_week = intval(date_i18n( 'W' )) + intval($settings['gf_week_dynamic_field_week_plus']);
@@ -560,7 +562,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			$dynamic_field_text .= strval($dynamic_field_week); 
 		}
 		
-		$product_id = strval($settings['gf_leadlovers_product_choice']);
+		$product_id = rgar($settings, 'gf_leadlovers_product_choice');
 		
 		$url = 'http://llapi.leadlovers.com/webapi'; // URI base da API da LeadLovers
 
@@ -571,7 +573,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 		// ----------------------------------------------------
 		
 		// Se estivier habilitado o cadastro na máquina
-		if($settings['machine_register_enabled'])
+		if(rgar($settings, 'machine_register_enabled'))
 		{
 			// ----------------------------------------------------
 			// VAMOS FAZER O POST PARA INSERIR O LEAD NA MAQUINA 
@@ -623,7 +625,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 		// ----------------------------------------------------
 		// ----------------------------------------------------
 
-		if($settings['product_register_enabled'])
+		if(rgar($settings, 'product_register_enabled'))
 		{
 			$response = wp_remote_post( $url . '/customer' . '?token=' . $token, array(
 			'method'      => 'POST',
@@ -661,7 +663,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 		// NOTIFICAÇÕES POR E-MAIL
 		// ----------------------------------------------------
 
-		if ($settings['gf_notification_enabled'] || $settings['gf_only_error_notification'])
+		if (rgar($settings, 'gf_notification_enabled') || rgar($settings, 'gf_only_error_notification'))
 		{
 			//DEBUG
 			// $console = "<script>console.log(' Mensagem do além: Agora vai!!! ');</script>";
@@ -672,12 +674,12 @@ class GFLeadLoversAddOn extends GFAddOn {
 			$body .= '---------------------------------------------------------<br>';
 			$body .= $messages;
 
-			if ($settings['gf_only_error_notification'])
+			if (rgar($settings, 'gf_only_error_notification'))
 			{
 				if ($error)
 				{
 					$subject = '[' . $form['title'] . '] ' . 'ERRO no cadastro';
-					$to = $settings['gf_notification_email'];
+					$to = rgar($settings, 'gf_notification_email');
 					$headers = array('Content-Type: text/html; charset=UTF-8');
 					wp_mail( $to, $subject, $body, $headers );
 				}
@@ -685,7 +687,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			else
 			{
 				$subject = '[' . $form['title'] . '] ' . 'Notificação';
-				$to = $settings['gf_notification_email'];
+				$to = rgar($settings, 'gf_notification_email');
 				$headers = array('Content-Type: text/html; charset=UTF-8');
 				wp_mail( $to, $subject, $body, $headers );
 

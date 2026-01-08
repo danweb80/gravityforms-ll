@@ -5,7 +5,7 @@
  * Description: Cadastra em Cursos e/ou Máquinas
  * Author: Daniel Weber 
  * Author URI: mailto://prof.daniel.weber@gmail.com
- * Version: 0.7
+ * Version: 0.7.1
  * License: GPLv2 or later
  */
 

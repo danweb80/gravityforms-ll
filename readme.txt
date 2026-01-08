@@ -14,3 +14,6 @@ v0.6
 v0.7
 	Agora é o seguinte: para poder unificar todos os cadastros e poder indicar no Campo Dinâmico a data de término (que varia de produto para produto) e não mais a de entrada inserimos o campo "Somar à Semana do Ano"... assim no formulário podemos indicar qual semana depois do cadastro será marcada no campo dinamico.
 	E já que estamos usando o campo dinâmico e não a Tag para marcar a semana de entrada, capturamos as tag e as listamos em um select ao invés de indicar por texto.
+
+v0.7.1
+	Correção de bug (ao resgatar informações de configuração deve-se usar o método do G_Forms rgar() para evitar retorno de variáveis com erro a partir do PHP 8.0)
