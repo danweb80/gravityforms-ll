@@ -1,72 +1,90 @@
-/*
-jQuery(document).ready(function ($) 
-{
-    // Evento disparado ao mudar o conteúdo do select MACHINE
-    // Atualiza o campo de sequences conforme a nova escolha
-    // Capturando por ajax na função get_leadlovers_sequence_list
-    // O retorno já é no formato html <option value='115'>Nome da máquina</option>
-    $('#gf_leadlovers_machine').on('change', function()
-    {
-        $('#gf_leadlovers_sequence').prop('disabled', true);
-        $('#gf_leadlovers_sequence').css('opacity', '0.5');
-        $('#gf_leadlovers_level').prop('disabled', true);
-        $('#gf_leadlovers_level').css('opacity', '0.5');
+jQuery(function ($) {
 
-        var selectedValue = $(this).val();
+  // function setSetting(name, value) {
+  //   $('#_gform_setting_' + name).val(value).trigger('change');
+  // }
+  function setSetting(name, value) {
+    // const $el = $('#_gform_setting_' + name);
+    const $el = $('#' + name);
+    if (!$el.length) {
+      alert('Setting input não encontrado:', '#' + name);
+      return;
+    }
+    $el.val(value).trigger('change');
+  }
 
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                'action': 'get_leadlovers_sequence_list',
-                'machine_id': selectedValue,
-            },
-            success: function(result){
-                // alert(result);
-                $('#gf_leadlovers_sequence').html(result);
-                $('#gf_leadlovers_sequence').prop('disabled', false);
-                $('#gf_leadlovers_sequence').css('opacity', '1');
-                },
-            error: function(result){
-                alert('Erro no ajax!!');
-            }
-        });
+  function disable($el) { $el.prop('disabled', true).css('opacity', '0.5'); }
+  function enable($el)  { $el.prop('disabled', false).css('opacity', '1'); }
 
+  const $machine  = $('#ll_machine_select');
+  const $sequence = $('#ll_sequence_select');
+  const $level    = $('#ll_level_select');
 
+  // Ao mudar máquina: salva ID e carrega sequences
+  $machine.on('change', function () {
+
+    const machineId = $(this).val() || '';
+
+    setSetting('gf_leadlovers_machine', machineId);
+    setSetting('gf_leadlovers_sequence', '');
+    setSetting('gf_leadlovers_level', '');
+
+    $sequence.html('<option value="">Carregando...</option>');
+    $level.html('<option value="">Escolha um Nível</option>');
+
+    disable($sequence);
+    disable($level);
+
+    if (!machineId) {
+      $sequence.html('<option value="">Escolha uma Sequência</option>');
+      return;
+    }
+
+    $.post(ajaxurl, {
+      action: 'get_leadlovers_sequence_list',
+      machine_id: machineId
+    }).done(function (result) {
+      $sequence.html(result);
+      enable($sequence);
+    }).fail(function () {
+      alert('Erro ao carregar sequências.');
+      $sequence.html('<option value="">Escolha uma Sequência</option>');
     });
-    // Evento disparado ao mudar o conteúdo do select SEQUENCE
+  });
 
-    $('#gf_leadlovers_sequence').on('change', function()
-    {
-        $('#gf_leadlovers_level').prop('disabled', true);
-        $('#gf_leadlovers_level').css('opacity', '0.5');
-     
-        var selectedValue = $(this).val();
-        // alert(selectedValue + ' e ' + $('#gf_leadlovers_machine'));
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',        //Não consegui usar modo POST, não sei pq...
-            dataType: 'json',
-            data: {
-                'action': 'get_leadlovers_level_list',
-                'sequence_id': selectedValue,
-                'machine_id' : $('#gf_leadlovers_machine').val()
-            },
-            success: function(result){
-                // alert(result);
-                 $('#gf_leadlovers_level').html(result);
-                 $('#gf_leadlovers_level').prop('disabled', false);
-                 $('#gf_leadlovers_level').css('opacity', '1');
-            },
-            error: function(result){
-                alert('Erro no ajax!');
-            }
-        });
+  // Ao mudar sequência: salva ID e carrega levels
+  $sequence.on('change', function () {
+
+    const machineId  = $machine.val() || '';
+    const sequenceId = $(this).val() || '';
+
+    setSetting('gf_leadlovers_sequence', sequenceId);
+    setSetting('gf_leadlovers_level', '');
+
+    $level.html('<option value="">Carregando...</option>');
+    disable($level);
+
+    if (!machineId || !sequenceId) {
+      $level.html('<option value="">Escolha um Nível</option>');
+      return;
+    }
+
+    $.post(ajaxurl, {
+      action: 'get_leadlovers_level_list',
+      machine_id: machineId,
+      sequence_id: sequenceId
+    }).done(function (result) {
+      $level.html(result);
+      enable($level);
+    }).fail(function () {
+      alert('Erro ao carregar níveis.');
+      $level.html('<option value="">Escolha um Nível</option>');
     });
+  });
+
+  // Ao mudar nível: salva ID
+  $level.on('change', function () {
+    setSetting('gf_leadlovers_level', $(this).val() || '');
+  });
+
 });
-
-
-
-
-*/

@@ -41,8 +41,8 @@ class GFLeadLoversAddOn extends GFAddOn {
 		// ###RETOMAR
 		// na v0.4 usamos o js para os chamados ajax... nao serão usados nessa versão mas 
 		// devem ser reabilitados caso se retome o uso de selects para captura da máquina/sequencia e nivl
-		// add_action( 'wp_ajax_get_leadlovers_sequence_list', array($this, 'get_leadlovers_sequence_list_ajax_callback'));
-		// add_action( 'wp_ajax_get_leadlovers_level_list', array($this, 'get_leadlovers_level_list_ajax_callback'));
+		add_action( 'wp_ajax_get_leadlovers_sequence_list', array($this, 'get_leadlovers_sequence_list_ajax_callback'));
+		add_action( 'wp_ajax_get_leadlovers_level_list', array($this, 'get_leadlovers_level_list_ajax_callback'));
     }
 	
 	// # SCRIPTS & STYLES -----------------------------------------------------------------------------------------------
@@ -127,10 +127,10 @@ class GFLeadLoversAddOn extends GFAddOn {
 	/**
 	 * Creates a custom page for this add-on.
 	 */
-/*	public function plugin_page() {
-		echo 'This page appears in the Forms menu';
-	}
-*/
+	// public function plugin_page() {
+	// 	echo 'This page appears in the Forms menu';
+	// }
+
 	/**
 	 * Página de Configuração do Plugin.
 	 *
@@ -154,6 +154,61 @@ class GFLeadLoversAddOn extends GFAddOn {
 				)
 			)
 		);
+	}
+	private function render_ll_dynamic_selects_html( $form ) {
+
+		$settings   = $this->get_form_settings( $form );
+		$machine_id = (string) rgar($settings, 'gf_leadlovers_machine', '');
+		$seq_id     = (string) rgar($settings, 'gf_leadlovers_sequence', '');
+		$level_id   = (string) rgar($settings, 'gf_leadlovers_level', '');
+
+		// máquinas (carrega na renderização)
+		$machines = $this->get_leadlovers_machine_list(); // retorna array ['value'=>, 'label'=>]
+
+		// sequences/levels: se já houver machine/sequence salvos, pré-carrega para aparecer ao editar
+		$sequences = $machine_id ? $this->get_leadlovers_sequence_list($machine_id) : array();
+		$levels    = ($machine_id && $seq_id) ? $this->get_leadlovers_level_list($seq_id, $machine_id) : array();
+		ob_start(); ?>
+		<div style="margin:12px 0;">
+			<?php echo '<p>'. $machine_id . '</p>'; ?>
+			<?php echo '<p>'. $seq_id . '</p>'; ?>
+			<?php echo '<p>'. $level_id . '</p>'; ?>
+			<label style="display:block;margin-bottom:6px;"><strong>Máquina</strong></label>
+			<select id="ll_machine_select" class="medium">
+				<option value="">Escolha uma Máquina</option>
+				<?php foreach ($machines as $m): ?>
+					<option value="<?php echo esc_attr($m['value']); ?>" <?php selected($machine_id, (string)$m['value']); ?>>
+						<?php echo esc_html($m['label']); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</div>
+
+		<div style="margin:12px 0;">
+			<label style="display:block;margin-bottom:6px;"><strong>Sequência</strong></label>
+			<select id="ll_sequence_select" class="medium" <?php echo $machine_id ? '' : 'disabled'; ?>>
+				<option value="">Escolha uma Sequência</option>
+				<?php foreach ($sequences as $s): ?>
+					<option value="<?php echo esc_attr($s['value']); ?>" <?php selected($seq_id, (string)$s['value']); ?>>
+						<?php echo esc_html($s['label']); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</div>
+
+		<div style="margin:12px 0;">
+			<label style="display:block;margin-bottom:6px;"><strong>Nível</strong></label>
+			<select id="ll_level_select" class="medium" <?php echo ($machine_id && $seq_id) ? '' : 'disabled'; ?>>
+				<option value="">Escolha um Nível</option>
+				<?php foreach ($levels as $l): ?>
+					<option value="<?php echo esc_attr($l['value']); ?>" <?php selected($level_id, (string)$l['value']); ?>>
+						<?php echo esc_html($l['label']); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</div>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**
@@ -186,50 +241,43 @@ class GFLeadLoversAddOn extends GFAddOn {
 					// 	'type'    => 'select',
 					// 	'name'    => 'gf_leadlovers_machine',
 					// 	//'tooltip' => esc_html__( 'This is the tooltip', 'simpleaddon' ),
-					// 	// 'choices' => apply_filters('get_leadlovers_machine_list', array()) //os produtos serão buscados na função no arquivo do plugin
 					// 	'choices' => $this->get_leadlovers_machine_list() //os produtos serão buscados na função no arquivo do plugin
 					// ),
-					array(
-						'label'             => esc_html__( 'Máquina', 'gravityforms-ll' ),
-						'type'              => 'text',
-						'name'              => 'gf_leadlovers_machine',
-						'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
-						'class'             => 'medium',
-						//'feedback_callback' => array( $this, 'is_valid_setting' ),
-					),
 		// ###RETOMAR
 					// array(
 					// 	'label'   => esc_html__( 'Sequência:', 'gravityforms-ll' ),
 					// 	'type'    => 'select',
 					// 	'name'    => 'gf_leadlovers_sequence',
 					// 	//'tooltip' => esc_html__( 'This is the tooltip', 'simpleaddon' ),
-					// 	// 'choices' => apply_filters('get_leadlovers_sequence_list', array()) //os produtos serão buscados na função no arquivo do plugin
 					// 	'choices' => $this->get_leadlovers_sequence_list() //os produtos serão buscados na função no arquivo do plugin
 					// ),
-					array(
-						'label'             => esc_html__( 'Sequência', 'gravityforms-ll' ),
-						'type'              => 'text',
-						'name'              => 'gf_leadlovers_sequence',
-						'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
-						'class'             => 'medium',
-						//'feedback_callback' => array( $this, 'is_valid_setting' ),
-					),
 		// ###RETOMAR
 					// array(
 					// 	'label'             => esc_html__( 'Nível', 'gravityforms-ll' ),
 					// 	'type'              => 'select',
 					// 	'name'              => 'gf_leadlovers_level',
 					// 	//'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
-					// 	//'feedback_callback' => array( $this, 'is_valid_setting' ),
 					// 	'choices' 			=> $this->get_leadlovers_level_list() //os produtos serão buscados na função no arquivo do plugin
 					// ),
+
 					array(
-						'label'             => esc_html__( 'Nível', 'gravityforms-ll' ),
-						'type'              => 'text',
-						'name'              => 'gf_leadlovers_level',
-						'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
-						'class'             => 'medium',
+						'type'              => 'hidden',
+						'name'              => 'gf_leadlovers_machine',
 						//'feedback_callback' => array( $this, 'is_valid_setting' ),
+					),
+					array(
+						'type'              => 'hidden',
+						'name'              => 'gf_leadlovers_sequence',
+						//'feedback_callback' => array( $this, 'is_valid_setting' ),
+					),
+					array(
+						'type'              => 'hidden',
+						'name'              => 'gf_leadlovers_level',
+					),
+					array(
+					'type' => 'html',
+					'name' => 'll_dynamic_selects',
+					'html' => $this->render_ll_dynamic_selects_html( $form ),
 					),
 
 					array(
@@ -946,11 +994,11 @@ class GFLeadLoversAddOn extends GFAddOn {
 	public function get_leadlovers_sequence_list($machine_id = '')
 	{
 
-		$form = $this->get_current_form();
+		// $form = $this->get_current_form();
 		// //Pega o array com as configurações do Formulário atual
-		$settings = $this->get_form_settings( $form );
+		// $settings = $this->get_form_settings( $form );
 		//Pega os dados da Máquina/Sequência/Nível 
-		//$settings = $this->get_current_settings(); // Tive problemas ao chamar essa função
+		$settings = $this->get_current_settings(); // Tive problemas ao chamar essa função
 
 		if(!$machine_id)
 		{
@@ -962,7 +1010,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 
 			if(!$machine_id)
 			{
-				return array(array('label' => '------- Escolha antes uma Máquina -------', 'value' => ''));
+				return array(array('label' => 'Escolha uma Sequência', 'value' => ''));
 			}
 		}
 		
@@ -1031,7 +1079,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			{
 				// se nao tem nehm valor salvo retor um símbolo de bloqueio,
 				// pois vai ter que esperar o usuario clicar primeiro na sequencia
-				return array(array('label' => '------- Escolha antes uma Sequência -------', 'value' => ''));
+				return array(array('label' => 'Escolha um Nível', 'value' => ''));
 			}
 
 			// então, uma vez que tem uma sequencia defeinida, 
@@ -1094,11 +1142,11 @@ class GFLeadLoversAddOn extends GFAddOn {
 		$response = $this->get_leadlovers_sequence_list($_POST['machine_id']);
 
 // #### SAVE THE NEW CHOICES ####
-		$form = $this->get_current_form();
-		$settings = $this->get_form_settings( $form );
-		$settings['gf_leadlovers_sequence']['choices'] = $machine_list;
-		$this->set_settings($settings);
-		$this->save_form_settings($form, $settings); // <<<--- THIS BROKES THA AJAX
+		// $form = $this->get_current_form();
+		// $settings = $this->get_form_settings( $form );
+		// $settings['gf_leadlovers_sequence']['choices'] = $machine_list;
+		// $this->set_settings($settings);
+		// $this->save_form_settings($form, $settings); // <<<--- THIS BROKES THA AJAX
 			
 		$sequence_list_html = '<option value="">Escolha uma Sequência</option>';
 		foreach ( $response as $item )
@@ -1118,11 +1166,11 @@ class GFLeadLoversAddOn extends GFAddOn {
 		$response = $this->get_leadlovers_level_list($_POST['sequence_id'],$_POST['machine_id']);
 		
 // #### SAVE THE NEW CHOICES ####
-		$form = $this->get_current_form();
-		$settings = $this->get_form_settings( $form );
-		$settings['gf_leadlovers_level']['choices'] = $machine_list;
-		$this->set_settings($settings);
-		$this->save_form_settings($form, $settings);  
+		// $form = $this->get_current_form();
+		// $settings = $this->get_form_settings( $form );
+		// $settings['gf_leadlovers_level']['choices'] = $machine_list;
+		// $this->set_settings($settings);
+		// $this->save_form_settings($form, $settings);  
 
 		$level_list_html = '<option value="">Escolha um Nível</option>';
 		foreach ( $response as $item )
