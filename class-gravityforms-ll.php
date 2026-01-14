@@ -10,7 +10,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 	protected $_path = 'gravityforms-ll/gravityforms-ll.php';
 	protected $_full_path = __FILE__;
 	protected $_title = 'Gravity Forms - LeadLovers';
-	protected $_short_title = 'GFLeadLovers';
+	protected $_short_title = 'LeadLovers';
 
 	private static $_instance = null;
 
@@ -57,8 +57,8 @@ class GFLeadLoversAddOn extends GFAddOn {
 			array(
 				'handle'  => 'gravityforms-ll_js',
 				'src'     => $this->get_base_url() . '/js/gravityforms-ll.js',
-				// 'version' => $this->_version,
-				'version' => date("h:I:s"),
+				'version' => $this->_version,
+				// 'version' => date("h:I:s"),
 				'deps'    => array( 'jquery' ),
 				// 'in_footer' => true,
 				// 'strings' => array(
@@ -597,13 +597,13 @@ class GFLeadLoversAddOn extends GFAddOn {
 				);
 				if ($tag_id)
 				{
-					$body = array(
+					$body += array(
 						'Tag' => $tag_id
 					);
 				}
 				if ($dynamic_field_id) 
 				{
-					$body = array(
+					$body += array(
 						'DynamicFields' => array(
 							array('Id' => $dynamic_field_id, 'Value' => $dynamic_field_text)
 					));
