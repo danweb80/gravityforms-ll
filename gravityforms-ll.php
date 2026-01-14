@@ -5,7 +5,7 @@
  * Description: Cadastra em Cursos e/ou Máquinas
  * Author: Daniel Weber 
  * Author URI: mailto://prof.daniel.weber@gmail.com
- * Version: 0.7.1
+ * Version: 0.8
  * License: GPLv2 or later
  */
 
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-define( 'GF_LEADLOVERS_VERSION', '0.7' );
+define( 'GF_LEADLOVERS_VERSION', '0.8' );
 
 add_action( 'gform_loaded', array( 'GF_LeadLovers_Bootstrap', 'load' ), 5 );
 class GF_LeadLovers_Bootstrap {

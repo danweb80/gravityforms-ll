@@ -10,7 +10,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 	protected $_path = 'gravityforms-ll/gravityforms-ll.php';
 	protected $_full_path = __FILE__;
 	protected $_title = 'Gravity Forms - LeadLovers';
-	protected $_short_title = 'LeadLovers';
+	protected $_short_title = 'GFLeadLovers';
 
 	private static $_instance = null;
 
@@ -155,6 +155,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			)
 		);
 	}
+	
 	private function render_ll_dynamic_selects_html( $form ) {
 
 		$settings   = $this->get_form_settings( $form );
@@ -170,12 +171,8 @@ class GFLeadLoversAddOn extends GFAddOn {
 		$levels    = ($machine_id && $seq_id) ? $this->get_leadlovers_level_list($seq_id, $machine_id) : array();
 		ob_start(); ?>
 		<div style="margin:12px 0;">
-			<?php echo '<p>'. $machine_id . '</p>'; ?>
-			<?php echo '<p>'. $seq_id . '</p>'; ?>
-			<?php echo '<p>'. $level_id . '</p>'; ?>
 			<label style="display:block;margin-bottom:6px;"><strong>Máquina</strong></label>
 			<select id="ll_machine_select" class="medium">
-				<option value="">Escolha uma Máquina</option>
 				<?php foreach ($machines as $m): ?>
 					<option value="<?php echo esc_attr($m['value']); ?>" <?php selected($machine_id, (string)$m['value']); ?>>
 						<?php echo esc_html($m['label']); ?>
@@ -187,7 +184,6 @@ class GFLeadLoversAddOn extends GFAddOn {
 		<div style="margin:12px 0;">
 			<label style="display:block;margin-bottom:6px;"><strong>Sequência</strong></label>
 			<select id="ll_sequence_select" class="medium" <?php echo $machine_id ? '' : 'disabled'; ?>>
-				<option value="">Escolha uma Sequência</option>
 				<?php foreach ($sequences as $s): ?>
 					<option value="<?php echo esc_attr($s['value']); ?>" <?php selected($seq_id, (string)$s['value']); ?>>
 						<?php echo esc_html($s['label']); ?>
@@ -199,7 +195,6 @@ class GFLeadLoversAddOn extends GFAddOn {
 		<div style="margin:12px 0;">
 			<label style="display:block;margin-bottom:6px;"><strong>Nível</strong></label>
 			<select id="ll_level_select" class="medium" <?php echo ($machine_id && $seq_id) ? '' : 'disabled'; ?>>
-				<option value="">Escolha um Nível</option>
 				<?php foreach ($levels as $l): ?>
 					<option value="<?php echo esc_attr($l['value']); ?>" <?php selected($level_id, (string)$l['value']); ?>>
 						<?php echo esc_html($l['label']); ?>
@@ -235,31 +230,6 @@ class GFLeadLoversAddOn extends GFAddOn {
 							),
 						),
 					),
-		// ###RETOMAR
-					// array(
-					// 	'label'   => esc_html__( 'Máquina:', 'gravityforms-ll' ),
-					// 	'type'    => 'select',
-					// 	'name'    => 'gf_leadlovers_machine',
-					// 	//'tooltip' => esc_html__( 'This is the tooltip', 'simpleaddon' ),
-					// 	'choices' => $this->get_leadlovers_machine_list() //os produtos serão buscados na função no arquivo do plugin
-					// ),
-		// ###RETOMAR
-					// array(
-					// 	'label'   => esc_html__( 'Sequência:', 'gravityforms-ll' ),
-					// 	'type'    => 'select',
-					// 	'name'    => 'gf_leadlovers_sequence',
-					// 	//'tooltip' => esc_html__( 'This is the tooltip', 'simpleaddon' ),
-					// 	'choices' => $this->get_leadlovers_sequence_list() //os produtos serão buscados na função no arquivo do plugin
-					// ),
-		// ###RETOMAR
-					// array(
-					// 	'label'             => esc_html__( 'Nível', 'gravityforms-ll' ),
-					// 	'type'              => 'select',
-					// 	'name'              => 'gf_leadlovers_level',
-					// 	//'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
-					// 	'choices' 			=> $this->get_leadlovers_level_list() //os produtos serão buscados na função no arquivo do plugin
-					// ),
-
 					array(
 						'type'              => 'hidden',
 						'name'              => 'gf_leadlovers_machine',
@@ -274,44 +244,40 @@ class GFLeadLoversAddOn extends GFAddOn {
 						'type'              => 'hidden',
 						'name'              => 'gf_leadlovers_level',
 					),
+					// Usado somente para renderizar os selects no front... os values são salvos nos campos hidden acima
 					array(
 					'type' => 'html',
 					'name' => 'll_dynamic_selects',
 					'html' => $this->render_ll_dynamic_selects_html( $form ),
 					),
-
+					// Mapeamento dos campos do form
 					array(
 						'label' => esc_html__( 'Nome', 'gravityforms-ll' ),
 						'description' => esc_html__( 'Selecione o campo correspondete ao Nome', 'gravityforms-ll' ),
 						'type'  => 'field_select',
 						'name'  => 'gf_name_field',
 					),
-
 					array(
 						'label' => esc_html__( 'E-mail', 'gravityforms-ll' ),
 						'description' => esc_html__( 'Selecione o campo correspondete ao E-mail', 'gravityforms-ll' ),
 						'type'  => 'field_select',
 						'name'  => 'gf_email_field',
 					),
-
+					// Seleção de Tag
 					array(
 						'label'             => esc_html__( 'Tag', 'gravityforms-ll' ),
 						'type'              => 'select',
 						'name'              => 'gf_leadlovers_tag',
-						//'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
-						//'feedback_callback' => array( $this, 'is_valid_setting' ),
 						'choices' 			=> $this->get_leadlovers_tag_list() //os produtos serão buscados na função no arquivo do plugin
 					),
-
+					// Seleção de campo dinâmico do Leadlovers
 					array(
 						'label'             => esc_html__( 'Campo Dinâmico', 'gravityforms-ll' ),
 						'type'              => 'select',
 						'name'              => 'gf_leadlovers_dynamic_field_id',
 						//'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
-						//'feedback_callback' => array( $this, 'is_valid_setting' ),
 						'choices' 			=> $this->get_leadlovers_dynamic_fields_list() //os produtos serão buscados na função no arquivo do plugin
 					),
-
 					array(
 						'label'             => esc_html__( 'Texto do Campo Dinâmico', 'gravityforms-ll' ),
 						'type'              => 'text',
@@ -329,17 +295,15 @@ class GFLeadLoversAddOn extends GFAddOn {
 							array(
 								'label' => esc_html__( 'Habilitar a semana do Ano no Campo Dinâmico', 'gravityforms-ll' ),
 								'name'  => 'gf_week_dynamic_field_enabled',
-
 								'default_value' => false,
 							),
 						),
 					),
-
 					array(
-						'label'             => esc_html__( 'Somar à Semana do Ano', 'gravityforms-ll' ),
-						'type'              => 'text',
-						'name'              => 'gf_week_dynamic_field_week_plus',
-						'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
+						'label'    => esc_html__( 'Somar à Semana do Ano', 'gravityforms-ll' ),
+						'type'     => 'text',
+						'name'     => 'gf_week_dynamic_field_week_plus',
+						'tooltip'  => esc_html__( 'Indica o numero de semanas a partir da semana atual', 'gravityforms-ll' ),
 						//'feedback_callback' => array( $this, 'is_valid_setting' ),
 					),
 				),
@@ -379,7 +343,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 						'label'   => esc_html__( 'Escolha as opções de notificação', 'gravityforms-ll' ),
 						'type'    => 'checkbox',
 						'name'    => 'gf_notification_email_enable',
-						'tooltip' => esc_html__( 'Marque para habilitar o cadastro no Curso abaixo.', 'gravityforms-ll' ),
+						'tooltip' => esc_html__( 'Receba notificações por e-mail.', 'gravityforms-ll' ),
 						'choices' => array(
 							array(
 								'label' => esc_html__( 'Receber notificações', 'gravityforms-ll' ),
@@ -387,7 +351,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 								'default_value' => false,
 							),
 							array(
-								'label' => esc_html__( 'Receber notificações somente se houver agum erro', 'gravityforms-ll' ),
+								'label' => esc_html__( 'Receber notificações somente se houver algum erro', 'gravityforms-ll' ),
 								'name'  => 'gf_only_error_notification',
 								'default_value' => false,
 							),
@@ -397,7 +361,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 						'label'             => esc_html__( 'Enviar notificações para o E-mail:', 'gravityforms-ll' ),
 						'type'              => 'text',
 						'name'              => 'gf_notification_email',
-						'tooltip'           => esc_html__( 'This is the tooltip', 'gravityforms-ll' ),
+						'tooltip'           => esc_html__( 'Use `;´ para inserir mais de um email', 'gravityforms-ll' ),
 						'class'             => 'medium',
 						//'feedback_callback' => array( $this, 'is_valid_setting' ),
 					),
@@ -570,64 +534,119 @@ class GFLeadLoversAddOn extends GFAddOn {
 	 */
 	public function after_submission( $entry, $form ) 
 	{
-		// ----------------------------------------------------
-		// PREPARAMOS TODAS AS VARIÁVEIS
-		// ----------------------------------------------------
-		// Pega o token da página de configuração do Plugin (Add-On)
-		// $settings = $this->get_plugin_settings( $form );
-		// $token = $settings['gf_leadlovers_token']; //Isso funciona, mas a forma abaixo é mais direta
-		$token = $this->get_plugin_setting( 'gf_leadlovers_token' );
-		//Pega o array com as configurações do Formulário atual
 		$settings = $this->get_form_settings( $form );
-		//Pega os dados da Máquina/Sequência/Nível 
-		// $machine_id = strval($settings['gf_leadlovers_machine']);
-		// $sequence_id = strval($settings['gf_leadlovers_sequence']);
-		// $level_id = strval($settings['gf_leadlovers_level']);
-		$machine_id = rgar($settings,'gf_leadlovers_machine');
-		$sequence_id = rgar($settings, 'gf_leadlovers_sequence');
-		$level_id = rgar($settings, 'gf_leadlovers_level');
-		//Pega os campos da entrada $entry (Nome e Email)
-		$email_field_id = rgar($settings, 'gf_email_field');
-		$email = rgar($entry, $email_field_id); // Email
-		// Capturar os valores das entradas do formulário usando as referencias (ids) de campo
-		$name_field_id = rgar($settings, 'gf_name_field');
-		$nome = rgar($entry, $name_field_id); // Nome
-		//Pega o id da tag
-		$tag_id = rgar($settings, 'gf_leadlovers_tag');
 
-		// Pega os campos dinâmicos das configurações
-		$dynamic_field_id = rgar($settings, 'gf_leadlovers_dynamic_field_id');
-		$dynamic_field_text = rgar($settings, 'gf_leadlovers_dynamic_field_text');
-
-		if(rgar($settings, 'gf_week_dynamic_field_enabled'))
-		{
-			//Prefixo + Semana do ano + week_plus
-			$dynamic_field_week = intval(date_i18n( 'W' )) + intval($settings['gf_week_dynamic_field_week_plus']);
-			if($dynamic_field_week > 52)
-			{
-				$dynamic_field_week -= 52;
-			}
-			$dynamic_field_text .= strval($dynamic_field_week); 
-		}
-		
-		$product_id = rgar($settings, 'gf_leadlovers_product_choice');
-		
-		$url = 'http://llapi.leadlovers.com/webapi'; // URI base da API da LeadLovers
-
-		// ----------------------------------------------------
-		// ----------------------------------------------------
-		// CADASTRAR NA MÁQUINA
-		// ----------------------------------------------------
-		// ----------------------------------------------------
-		
-		// Se estivier habilitado o cadastro na máquina
-		if(rgar($settings, 'machine_register_enabled'))
+		if(rgar($settings, 'machine_register_enabled') || rgar($settings, 'product_register_enabled'))
 		{
 			// ----------------------------------------------------
-			// VAMOS FAZER O POST PARA INSERIR O LEAD NA MAQUINA 
+			// PREPARAMOS TODAS AS VARIÁVEIS
+			// ----------------------------------------------------
+			// Pega o token da página de configuração do Plugin (Add-On)
+			$token = $this->get_plugin_setting( 'gf_leadlovers_token' );
+			//Pega o array com as configurações do Formulário atual
+			//Pega os dados da Máquina/Sequência/Nível 
+			$machine_id = rgar($settings,'gf_leadlovers_machine');
+			$sequence_id = rgar($settings, 'gf_leadlovers_sequence');
+			$level_id = rgar($settings, 'gf_leadlovers_level');
+			//Pega os campos da entrada $entry (Nome e Email)
+			$email_field_id = rgar($settings, 'gf_email_field');
+			$email = rgar($entry, $email_field_id); // Email
+			// Capturar os valores das entradas do formulário usando as referencias (ids) de campo
+			$name_field_id = rgar($settings, 'gf_name_field');
+			$nome = rgar($entry, $name_field_id); // Nome
+			//Pega o id da tag
+			$tag_id = rgar($settings, 'gf_leadlovers_tag');
+
+			// Pega os campos dinâmicos das configurações
+			$dynamic_field_id = rgar($settings, 'gf_leadlovers_dynamic_field_id');
+			$dynamic_field_text = rgar($settings, 'gf_leadlovers_dynamic_field_text');
+
+			if(rgar($settings, 'gf_week_dynamic_field_enabled'))
+			{
+				//Prefixo + Semana do ano + week_plus
+				$dynamic_field_week = intval(date_i18n( 'W' )) + intval($settings['gf_week_dynamic_field_week_plus']);
+				if($dynamic_field_week > 52)
+				{
+					$dynamic_field_week -= 52;
+				}
+				$dynamic_field_text .= strval($dynamic_field_week); 
+			}
+			
+			$product_id = rgar($settings, 'gf_leadlovers_product_choice');
+			
+			$url = 'http://llapi.leadlovers.com/webapi'; // URI base da API da LeadLovers
+
+			// ----------------------------------------------------
+			// ----------------------------------------------------
+			// CADASTRAR NA MÁQUINA
+			// ----------------------------------------------------
 			// ----------------------------------------------------
 			
-			$response = wp_remote_post( $url . '/lead' . '?token=' . $token, array(
+			// Se estivier habilitado o cadastro na máquina
+			if(rgar($settings, 'machine_register_enabled'))
+			{
+				// ----------------------------------------------------
+				// VAMOS FAZER O POST PARA INSERIR O LEAD NA MAQUINA 
+				// ----------------------------------------------------
+				$body = array(
+					'Name' => $nome,
+					'Email' => $email,
+					'MachineCode' => $machine_id,
+					'EmailSequenceCode' => $sequence_id,
+					'SequenceLevelCode' => $level_id,
+				);
+				if ($tag_id)
+				{
+					$body = array(
+						'Tag' => $tag_id
+					);
+				}
+				if ($dynamic_field_id) 
+				{
+					$body = array(
+						'DynamicFields' => array(
+							array('Id' => $dynamic_field_id, 'Value' => $dynamic_field_text)
+					));
+				}
+
+				$response = wp_remote_post( $url . '/lead' . '?token=' . $token, array(
+					'method'      => 'POST',
+					'timeout'     => 30,
+					'redirection' => 10,
+					'httpversion' => '1.0',
+					'blocking'    => true,
+					'headers'     => array('accept: application/json'),
+					'body'        => $body
+				));
+
+				// pegamos o "corpo" da resposta recebida...
+				$response_body = wp_remote_retrieve_body( $response );
+				// e transformamos de JSON em um array PHP normal.
+				$response_data = json_decode( $response_body, true );
+
+				switch($response_data['StatusCode'])
+				{
+					case 200:	// OK!
+						$messages = 'Cadastro na Máquina [' . $machine_id . '] OK: '. $response_data['Message'] . '.<br>';
+						break;
+					case 400:
+					case 401:
+					default:
+						$messages = 'Cadastro na Máquina [' . $machine_id . '] falhou!!! Erro ' . $response_data['StatusCode'] . ': ' . $response_data['Message'] . '.<br>';
+						$error = true;
+
+				}
+			}
+
+			// ----------------------------------------------------
+			// ----------------------------------------------------
+			// INSERIR O LEAD NO PRODUTO (CURSO)
+			// ----------------------------------------------------
+			// ----------------------------------------------------
+
+			if(rgar($settings, 'product_register_enabled'))
+			{
+				$response = wp_remote_post( $url . '/customer' . '?token=' . $token, array(
 				'method'      => 'POST',
 				'timeout'     => 30,
 				'redirection' => 10,
@@ -637,112 +656,63 @@ class GFLeadLoversAddOn extends GFAddOn {
 				'body'        => array(
 					'Name' => $nome,
 					'Email' => $email,
-					'MachineCode' => $machine_id,
-					'EmailSequenceCode' => $sequence_id,
-					'SequenceLevelCode' => $level_id,
-					'Tag' => $tag_id,
-					'DynamicFields' => array(array(
-						'Id' => $dynamic_field_id,
-						'Value' => $dynamic_field_text
+					'ProductId' => $product_id
 					))
-				)
-			));
+				);
+				// pegamos o "corpo" da resposta recebida...
+				$response_body = wp_remote_retrieve_body( $response );
+				// e transformamos de JSON em um array PHP normal.
+				$response_data = json_decode( $response_body, true );
 
-			// pegamos o "corpo" da resposta recebida...
-			$response_body = wp_remote_retrieve_body( $response );
-			// e transformamos de JSON em um array PHP normal.
-			$response_data = json_decode( $response_body, true );
-
-			switch($response_data['StatusCode'])
-			{
-				case 200:	// OK!
-					$messages .= 'Cadastro na Máquina OK:'. $response_data['Message'] . '.<br>';
-					break;
-				case 400:
-				case 401:
-				default:
-					$messages .= 'Cadastro na Máquina falhou!!! Erro ' . $response_data['StatusCode'] . ': ' . $response_data['Message'] . '.<br>';
-					$error = true;
-
-			}
-		}
-
-		// ----------------------------------------------------
-		// ----------------------------------------------------
-		// INSERIR O LEAD NO PRODUTO (CURSO)
-		// ----------------------------------------------------
-		// ----------------------------------------------------
-
-		if(rgar($settings, 'product_register_enabled'))
-		{
-			$response = wp_remote_post( $url . '/customer' . '?token=' . $token, array(
-			'method'      => 'POST',
-			'timeout'     => 30,
-			'redirection' => 10,
-			'httpversion' => '1.0',
-			'blocking'    => true,
-			'headers'     => array('accept: application/json'),
-			'body'        => array(
-				'Name' => $nome,
-				'Email' => $email,
-				'ProductId' => $product_id
-				))
-			);
-			// pegamos o "corpo" da resposta recebida...
-			$response_body = wp_remote_retrieve_body( $response );
-			// e transformamos de JSON em um array PHP normal.
-			$response_data = json_decode( $response_body, true );
-
-			switch($response_data['StatusCode'])
-			{
-				case 200:	// OK!
-					$messages .= 'Cadastro no Produto OK: '. $response_data['Message'] . '.<br>';
-					break;
-				case 400:	// ERRO
-				case 401:
-				default:
-					$messages .= 'Cadastro no Produto falhou!!! Erro ' . $response_data['StatusCode'] . ': ' . $response_data['Message'] . '.<br>';
-					$error = true;
-
-			}
-		}
-		
-		// ----------------------------------------------------
-		// NOTIFICAÇÕES POR E-MAIL
-		// ----------------------------------------------------
-
-		if (rgar($settings, 'gf_notification_enabled') || rgar($settings, 'gf_only_error_notification'))
-		{
-			//DEBUG
-			// $console = "<script>console.log(' Mensagem do além: Agora vai!!! ');</script>";
-			// echo $console;
-
-			$body = 'Nome: ' . $nome . '<br>';
-			$body .= 'E-mail: ' . $email . '<br>';
-			$body .= '---------------------------------------------------------<br>';
-			$body .= $messages;
-
-			if (rgar($settings, 'gf_only_error_notification'))
-			{
-				if ($error)
+				switch($response_data['StatusCode'])
 				{
-					$subject = '[' . $form['title'] . '] ' . 'ERRO no cadastro';
+					case 200:	// OK!
+						$messages .= 'Cadastro no Produto [' . $product_id . '] OK: '. $response_data['Message'] . '.<br>';
+						break;
+					case 400:	// ERRO
+					case 401:
+					default:
+						$messages .= 'Cadastro no Produto [' . $product_id . '] falhou!!! Erro ' . $response_data['StatusCode'] . ': ' . $response_data['Message'] . '.<br>';
+						$error = true;
+
+				}
+			}
+			
+			// ----------------------------------------------------
+			// NOTIFICAÇÕES POR E-MAIL
+			// ----------------------------------------------------
+
+			if (rgar($settings, 'gf_notification_enabled') || rgar($settings, 'gf_only_error_notification'))
+			{
+				//DEBUG
+				// $console = "<script>console.log(' Mensagem do além: Agora vai!!! ');</script>";
+				// echo $console;
+
+				$body = 'Nome: ' . $nome . '<br>';
+				$body .= 'E-mail: ' . $email . '<br>';
+				$body .= '---------------------------------------------------------<br>';
+				$body .= $messages;
+
+				if (rgar($settings, 'gf_only_error_notification'))
+				{
+					if ($error)
+					{
+						$subject = '[' . $form['title'] . '] ' . 'ERRO no cadastro';
+						$to = rgar($settings, 'gf_notification_email');
+						$headers = array('Content-Type: text/html; charset=UTF-8');
+						wp_mail( $to, $subject, $body, $headers );
+					}
+				}
+				else
+				{
+					$subject = '[' . $form['title'] . '] ' . 'Notificação';
 					$to = rgar($settings, 'gf_notification_email');
 					$headers = array('Content-Type: text/html; charset=UTF-8');
 					wp_mail( $to, $subject, $body, $headers );
+
 				}
 			}
-			else
-			{
-				$subject = '[' . $form['title'] . '] ' . 'Notificação';
-				$to = rgar($settings, 'gf_notification_email');
-				$headers = array('Content-Type: text/html; charset=UTF-8');
-				wp_mail( $to, $subject, $body, $headers );
-
-			}
-
 		}
-
 	} // FIM DA FUNÇÃO
 
 		
@@ -781,20 +751,19 @@ class GFLeadLoversAddOn extends GFAddOn {
 			//capturamos as tags da resposta
 			$items = $response_data['Tags'];
 			//Verificamos item por item até achar o ID da TAG que cadastrada
-			
+			$tag_list[] = array('label' => 'Selecione uma tag', 'value' => '');
 			foreach ( $items as $item )
 			{
 				// salva a lista num array Id => Nome(Id) para melhor identificação
 				$tag_list[] = array('label' => $item['Title'], 'value' => $item['Id']);
 			}	
-
-			return $tag_list;
 		}
 		else
 		{
-			$messages .= 'Erro ao capturar a lista de tags! Erro ' . $response_data['StatusCode'] . ': ' . $response_data['Message'] . '<br>';
-			$error = true;
+			$tag_list[] = array('label' => 'Erro...', 'value' => '');
 		}
+
+		return $tag_list;
 	}
 
 
@@ -862,6 +831,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			return array('label' => 'erro');
 		}
 	}
+
 	//******************************************************************************
 	//** FAZ A REQUISIÇÃO GET NA API E RETORNA OS DADOS
 	//** NUM ARRAY ASSOCIATIVO [value] => [label]
@@ -895,20 +865,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			// e transformamos de JSON em um array PHP normal.
 			$response_data = json_decode( $response_body, true );
 			
-			// $form = $this->get_current_form();
-			// //Pega o array com as configurações do Formulário atual
-			// $settings = $this->get_form_settings( $form );
-			//Pega os dados da Máquina/Sequência/Nível 
-
-			$settings = $this->get_current_settings();
-
-			$dynamic_field_id = strval(rgar( $settings,'gf_leadlovers_dynamic_field_id'));
-			if(!$dynamic_field_id)
-			{
-				$dynamic_field_list[] = array('label' => 'Selecione um Campo', 'value' => '');
-			}
-
-			//$product_list = array();
+			$dynamic_field_list[] = array('label' => 'Selecione um Campo', 'value' => '');
 			$items = $response_data['Items'];
 			foreach ( $items as $item )
 			{
@@ -976,7 +933,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			foreach ( $items as $item )
 			{
 				// salva a lista num array Id => Nome(Id) para melhor identificação
-				$machine_list[] = array('label' => $item['MachineName'], 'value' => $item['MachineCode']);
+				$machine_list[] = array('label' => $item['MachineName'].' ('.$item['MachineCode'].')', 'value' => $item['MachineCode']);
 			}	
 			
 			return $machine_list;
@@ -993,19 +950,13 @@ class GFLeadLoversAddOn extends GFAddOn {
 	//******************************************************************************
 	public function get_leadlovers_sequence_list($machine_id = '')
 	{
-
-		// $form = $this->get_current_form();
+		$form = $this->get_current_form();
 		// //Pega o array com as configurações do Formulário atual
-		// $settings = $this->get_form_settings( $form );
+		$settings = $this->get_form_settings( $form );
 		//Pega os dados da Máquina/Sequência/Nível 
-		$settings = $this->get_current_settings(); // Tive problemas ao chamar essa função
 
 		if(!$machine_id)
 		{
-			// Pega os dados da Máquina/Sequência/Nível 
-
-			// $settings = $this->get_current_settings();
-
 			$machine_id = strval(rgar( $settings,'gf_leadlovers_machine'));
 
 			if(!$machine_id)
@@ -1043,7 +994,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			foreach ( $items as $item )
 			{
 				// salva a lista num array Id => Nome(Id) para melhor identificação
-				$machine_list[] = array('label' => $item['SequenceName'], 'value' => $item['SequenceCode']);
+				$machine_list[] = array('label' => $item['SequenceName'].' ('.$item['SequenceCode'].')', 'value' => $item['SequenceCode']);
 			}	
 			
 			return $machine_list;
@@ -1065,7 +1016,6 @@ class GFLeadLoversAddOn extends GFAddOn {
 		// //Pega o array com as configurações do Formulário atual
 		$settings = $this->get_form_settings( $form );
 		//Pega os dados da Máquina/Sequência/Nível 
-		//$settings = $this->get_current_settings(); // Tive problemas ao chamar essa função
 
 		if(!$sequence_id) 
 		{
@@ -1122,7 +1072,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 			foreach ( $items as $item )
 			{
 				// salva a lista num array Id => Nome(Id) para melhor identificação
-				$machine_list[] = array('label' => $item['Subject'], 'value' => $item['Sequence']);
+				$machine_list[] = array('label' => $item['Subject'].' ('.$item['Sequence'].')', 'value' => $item['Sequence']);
 			}	
 
 			return $machine_list;
@@ -1138,16 +1088,7 @@ class GFLeadLoversAddOn extends GFAddOn {
 	//******************************************************************************
 	public function get_leadlovers_sequence_list_ajax_callback()
 	{
-		$machine_id = wp_strip_all_tags($_POST['machine_id']);
 		$response = $this->get_leadlovers_sequence_list($_POST['machine_id']);
-
-// #### SAVE THE NEW CHOICES ####
-		// $form = $this->get_current_form();
-		// $settings = $this->get_form_settings( $form );
-		// $settings['gf_leadlovers_sequence']['choices'] = $machine_list;
-		// $this->set_settings($settings);
-		// $this->save_form_settings($form, $settings); // <<<--- THIS BROKES THA AJAX
-			
 		$sequence_list_html = '<option value="">Escolha uma Sequência</option>';
 		foreach ( $response as $item )
 		{
@@ -1164,14 +1105,6 @@ class GFLeadLoversAddOn extends GFAddOn {
 	public function get_leadlovers_level_list_ajax_callback()
 	{
 		$response = $this->get_leadlovers_level_list($_POST['sequence_id'],$_POST['machine_id']);
-		
-// #### SAVE THE NEW CHOICES ####
-		// $form = $this->get_current_form();
-		// $settings = $this->get_form_settings( $form );
-		// $settings['gf_leadlovers_level']['choices'] = $machine_list;
-		// $this->set_settings($settings);
-		// $this->save_form_settings($form, $settings);  
-
 		$level_list_html = '<option value="">Escolha um Nível</option>';
 		foreach ( $response as $item )
 		{

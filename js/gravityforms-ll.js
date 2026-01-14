@@ -1,15 +1,6 @@
 jQuery(function ($) {
-
-  // function setSetting(name, value) {
-  //   $('#_gform_setting_' + name).val(value).trigger('change');
-  // }
   function setSetting(name, value) {
-    // const $el = $('#_gform_setting_' + name);
     const $el = $('#' + name);
-    if (!$el.length) {
-      alert('Setting input não encontrado:', '#' + name);
-      return;
-    }
     $el.val(value).trigger('change');
   }
 
@@ -87,4 +78,23 @@ jQuery(function ($) {
     setSetting('gf_leadlovers_level', $(this).val() || '');
   });
 
+  // Mostra/esconde as opções de Máquina LeadLovers conforme o checkbox
+  $('#gf_leadlovers_dynamic_field_id')
+      .on( 'change' , function() {
+      if($(this).val()) 
+      {
+        $( 'div#gform_setting_gf_leadlovers_dynamic_field_text' ).show(); 
+        $( 'div#gform_setting_gf_week_dynamic_field_enable' ).show();
+        $( 'div#gform_setting_gf_week_dynamic_field_week_plus' ).show();
+      }
+      else
+      {
+        $( 'div#gform_setting_gf_leadlovers_dynamic_field_text' ).hide();
+        $( 'div#gform_setting_gf_week_dynamic_field_enable' ).hide();
+        $( 'div#gform_setting_gf_week_dynamic_field_week_plus' ).hide();
+      }
+  }).trigger( 'change' );
+
 });
+
+

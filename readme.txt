@@ -17,3 +17,12 @@ v0.7
 
 v0.7.1
 	Correção de bug (ao resgatar informações de configuração deve-se usar o método do G_Forms rgar() para evitar retorno de variáveis com erro a partir do PHP 8.0)
+
+v0.8
+	Reimplementação da proposta da v0.4 (abandonada) da captura dos códigos de Máquina/Sequência/Nível em selects por api leadlovers.
+	Porém diferentemente da v.0.4 usamos campos hidden para salvar os valores enquanto usamos campos select somente no frontend.
+	>> Bug!! << 
+		Ainda ocorre um bug: ao salvar os dados os campos select não carregam as informações salvas, mas a versão previamente carregada...
+		Porém, os dados estão salvos!!! Se a página for recarregada os selects serão atualizados corretamente! 
+	Também deixamos tag e campo dinâmico opcionais.
+	E corrigimos warnings.
